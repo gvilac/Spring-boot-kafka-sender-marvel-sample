@@ -1,4 +1,4 @@
-# Spring-boot-kafka-sender-marvel-sample
+# Spring boot kafka sender marvel sample
 
 Simple example how to create basic service exposing Spring HTTP endpoint and consuming MarvelApi in order to search for creators. Then sends this information through kafka.
 
@@ -35,3 +35,4 @@ And then use the request:
 ```html
 http://localhost:8080/creators
 ```
+

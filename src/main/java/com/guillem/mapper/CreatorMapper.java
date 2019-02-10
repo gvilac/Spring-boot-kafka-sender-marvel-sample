@@ -1,10 +1,13 @@
 package com.guillem.mapper;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.guillem.exception.MapperException;
 import com.guillem.model.Creator;
 import com.guillem.model.Result;
+import org.springframework.boot.json.JsonParseException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
@@ -18,10 +21,10 @@ import java.util.List;
 @Component
 public class CreatorMapper {
 
-    public List<Creator> mapCreators(ResponseEntity<String> response) throws IOException {
+    public List<Creator> mapCreators(ResponseEntity<String> response) throws MapperException {
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode root = mapper.readTree(response.getBody());
-        JsonNode data = root.path("data");
+
+        JsonNode data = getJsonNode(response, mapper).path("data");
 
         List<Creator> creators = new ArrayList<Creator>();
         ArrayNode array = (ArrayNode) data.path("results");
@@ -43,6 +46,16 @@ public class CreatorMapper {
             creators.add(creator);
         }
         return creators;
+    }
+
+    private JsonNode getJsonNode(ResponseEntity<String> response, ObjectMapper mapper) throws MapperException {
+        JsonNode root;
+        try {
+            root = mapper.readTree(response.getBody());
+        } catch (IOException e) {
+            throw new MapperException(e);
+        }
+        return root;
     }
 
     private List<Result> getResultFromJsonNode(JsonNode jsonNode) {

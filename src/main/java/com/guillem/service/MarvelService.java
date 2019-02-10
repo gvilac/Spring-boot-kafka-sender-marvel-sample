@@ -1,7 +1,7 @@
 package com.guillem.service;
 
 import com.guillem.configuration.MarvelClientConfig;
-import com.guillem.kafka.KafkaSender;
+import com.guillem.exception.MapperException;
 import com.guillem.mapper.CreatorMapper;
 import com.guillem.model.Creator;
 import com.guillem.model.RequestCreators;
@@ -23,29 +23,18 @@ public class MarvelService {
 
     private final MarvelClientConfig marvelClientConfig;
     private final CreatorMapper creatorMapper;
-    private final KafkaSender kafkaSender;
 
     @Autowired
     public MarvelService(MarvelClientConfig marvelClientConfig, CreatorMapper creatorMapper, KafkaSender kafkaSender) {
         this.marvelClientConfig = marvelClientConfig;
         this.creatorMapper = creatorMapper;
-        this.kafkaSender = kafkaSender;
     }
 
-    public List<Creator> getCreators(RequestCreators requestCreators) throws IOException {
+    public List<Creator> getCreators(RequestCreators requestCreators) throws MapperException {
         LOGGER.info("Starting service...");
 
         ResponseEntity<String> response = new RestTemplate().getForEntity(marvelClientConfig.getMarvelConfiguredURL(requestCreators), String.class);
-        List<Creator> creators = creatorMapper.mapCreators(response);
-        //creatorRepository.saveAll(creators); send to kafka
-        for (Creator creator : creators) {
-            kafkaSender.sendCreator(creator);
-        }
-        return creators;
+        return creatorMapper.mapCreators(response);
     }
-
-    /*public Creator getCreator(String id) throws NotFoundInDatabaseException {
-        return creatorRepository.findById(id).orElseThrow(() -> new NotFoundInDatabaseException("Could not found creator " + id));
-    }*/
 
 }

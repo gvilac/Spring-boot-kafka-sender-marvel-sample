@@ -5,8 +5,8 @@ package com.guillem.model;
  */
 public class Result {
 
-    String id;
-    String name;
+    private String id;
+    private String name;
 
     public Result(String id, String name) {
         this.id = id;

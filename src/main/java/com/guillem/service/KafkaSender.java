@@ -1,4 +1,4 @@
-package com.guillem.kafka;
+package com.guillem.service;
 
 import com.guillem.model.Creator;
 import org.slf4j.Logger;
